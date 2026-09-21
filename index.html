@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="Aplicación de estudio para memorizar el papel de Orsino en Noche de Reyes."
+  >
+
+  <title>Noche de Reyes | Orsino</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       ENCABEZADO
+  ========================== -->
+
+  <header class="app-header">
+
+    <div class="brand">
+      <span class="brand-kicker">William Shakespeare</span>
+
+      <h1>Noche de Reyes</h1>
+
+      <p>Entrenador de texto</p>
+    </div>
+
+    <div class="character-badge">
+      <span>Mi personaje</span>
+      <strong>ORSINO</strong>
+    </div>
+
+  </header>
+
+
+  <!-- =========================
+       NAVEGACIÓN
+  ========================== -->
+
+  <nav class="main-nav" aria-label="Navegación principal">
+
+    <button
+      class="nav-button active"
+      data-view="home"
+      type="button"
+    >
+      <span class="nav-icon">⌂</span>
+      <span>Inicio</span>
+    </button>
+
+    <button
+      class="nav-button"
+      data-view="learn"
+      type="button"
+    >
+      <span class="nav-icon">🧠</span>
+      <span>Aprender</span>
+    </button>
+
+    <button
+      class="nav-button"
+      data-view="rehearse"
+      type="button"
+    >
+      <span class="nav-icon">🎭</span>
+      <span>Ensayar</span>
+    </button>
+
+    <button
+      class="nav-button"
+      data-view="lines"
+      type="button"
+    >
+      <span class="nav-icon">📖</span>
+      <span>Mis textos</span>
+    </button>
+
+    <button
+      class="nav-button"
+      data-view="progress"
+      type="button"
+    >
+      <span class="nav-icon">✓</span>
+      <span>Progreso</span>
+    </button>
+
+  </nav>
+
+
+  <!-- =========================
+       CONTENIDO PRINCIPAL
+  ========================== -->
+
+  <main class="app-main">
+
+
+    <!-- =====================
+         INICIO
+    ====================== -->
+
+    <section
+      id="view-home"
+      class="view active"
+    >
+
+      <div class="hero">
+
+        <div class="hero-content">
+
+          <span class="eyebrow">
+            🎭 Preparación de personaje
+          </span>
+
+          <h2>
+            Aprende tu texto.<br>
+            Ensaya como Orsino.
+          </h2>
+
+          <p>
+            Practica tus parlamentos de
+            <strong>Noche de Reyes</strong>,
+            aprende a reconocer tus pies y lleva un registro
+            de los textos que ya dominas.
+          </p>
+
+          <button
+            id="startLearningButton"
+            class="primary-button large"
+            type="button"
+          >
+            Comenzar a estudiar
+          </button>
+
+        </div>
+
+
+        <div class="hero-quote">
+
+          <span class="quote-mark">“</span>
+
+          <blockquote>
+            Si la música alimenta al amor,
+            seguid cantando.
+          </blockquote>
+
+          <span class="quote-author">
+            ORSINO · ACTO I
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- RESUMEN -->
+
+      <section class="dashboard">
+
+        <div class="section-heading">
+
+          <div>
+            <span class="eyebrow">Tu preparación</span>
+            <h3>¿Qué quieres practicar?</h3>
+          </div>
+
+        </div>
+
+
+        <div class="mode-grid">
+
+          <button
+            class="mode-card"
+            data-open-view="learn"
+            type="button"
+          >
+
+            <span class="mode-icon">🧠</span>
+
+            <span class="mode-content">
+              <strong>Aprender texto</strong>
+
+              <small>
+                Memoriza cada parlamento utilizando
+                pistas progresivas.
+              </small>
+            </span>
+
+            <span class="mode-arrow">→</span>
+
+          </button>
+
+
+          <button
+            class="mode-card"
+            data-open-view="rehearse"
+            type="button"
+          >
+
+            <span class="mode-icon">🎭</span>
+
+            <span class="mode-content">
+              <strong>Ensayar escena</strong>
+
+              <small>
+                Lee los pies de los demás personajes
+                y responde como Orsino.
+              </small>
+            </span>
+
+            <span class="mode-arrow">→</span>
+
+          </button>
+
+
+          <button
+            class="mode-card"
+            data-open-view="lines"
+            type="button"
+          >
+
+            <span class="mode-icon">📖</span>
+
+            <span class="mode-content">
+              <strong>Mis parlamentos</strong>
+
+              <small>
+                Consulta todos los textos de Orsino
+                ordenados por acto y escena.
+              </small>
+            </span>
+
+            <span class="mode-arrow">→</span>
+
+          </button>
+
+
+          <button
+            class="mode-card"
+            data-open-view="progress"
+            type="button"
+          >
+
+            <span class="mode-icon">✓</span>
+
+            <span class="mode-content">
+              <strong>Mi progreso</strong>
+
+              <small>
+                Descubre cuánto texto ya dominas
+                y qué necesitas reforzar.
+              </small>
+            </span>
+
+            <span class="mode-arrow">→</span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- PROGRESO RÁPIDO -->
+
+      <section class="quick-progress">
+
+        <div class="progress-info">
+
+          <span>Progreso general</span>
+
+          <strong id="homeProgressText">
+            0%
+          </strong>
+
+        </div>
+
+
+        <div class="progress-bar">
+
+          <div
+            id="homeProgressBar"
+            class="progress-fill"
+            style="width: 0%"
+          ></div>
+
+        </div>
+
+        <p id="homeProgressDescription">
+          Todavía no has comenzado a estudiar.
+        </p>
+
+      </section>
+
+    </section>
+
+
+    <!-- =====================
+         APRENDER
+    ====================== -->
+
+    <section
+      id="view-learn"
+      class="view"
+    >
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">Modo memoria</span>
+          <h2>Aprender texto</h2>
+
+          <p>
+            Lee el pie y trata de recordar exactamente
+            qué responde Orsino.
+          </p>
+        </div>
+
+
+        <div class="counter-box">
+          <span>Parlamento</span>
+
+          <strong>
+            <span id="learnCurrentNumber">1</span>
+            /
+            <span id="learnTotalNumber">0</span>
+          </strong>
+        </div>
+
+      </div>
+
+
+      <article class="practice-card">
+
+        <div class="scene-label">
+          <span id="learnAct">ACTO I</span>
+          <span>·</span>
+          <span id="learnScene">ESCENA I</span>
+        </div>
+
+
+        <!-- PIE -->
+
+        <section class="cue-box">
+
+          <span class="box-label">
+            TU PIE
+          </span>
+
+          <strong id="cueCharacter">
+            PERSONAJE
+          </strong>
+
+          <p id="cueText">
+            Aquí aparecerá el parlamento anterior.
+          </p>
+
+        </section>
+
+
+        <div class="your-turn">
+
+          <span class="turn-indicator">
+            🎭 TU TURNO
+          </span>
+
+          <h3>ORSINO</h3>
+
+        </div>
+
+
+        <!-- RESPUESTA -->
+
+        <section
+          id="answerBox"
+          class="answer-box hidden"
+        >
+
+          <span class="box-label">
+            TU TEXTO
+          </span>
+
+          <p id="answerText"></p>
+
+        </section>
+
+
+        <!-- PISTA -->
+
+        <section
+          id="hintBox"
+          class="hint-box hidden"
+        >
+
+          <span class="box-label">
+            PISTA
+          </span>
+
+          <p id="hintText"></p>
+
+        </section>
+
+
+        <!-- CONTROLES -->
+
+        <div class="practice-actions">
+
+          <button
+            id="firstWordButton"
+            class="secondary-button"
+            type="button"
+          >
+            🔤 Primera palabra
+          </button>
+
+          <button
+            id="hintButton"
+            class="secondary-button"
+            type="button"
+          >
+            💡 Pista
+          </button>
+
+          <button
+            id="showAnswerButton"
+            class="primary-button"
+            type="button"
+          >
+            👁 Ver texto
+          </button>
+
+        </div>
+
+
+        <!-- AUTOEVALUACIÓN -->
+
+        <div
+          id="evaluationButtons"
+          class="evaluation hidden"
+        >
+
+          <p>¿Cómo te fue?</p>
+
+          <div class="evaluation-actions">
+
+            <button
+              id="practiceAgainButton"
+              class="danger-button"
+              type="button"
+            >
+              ↻ Necesito practicar
+            </button>
+
+            <button
+              id="rememberedButton"
+              class="success-button"
+              type="button"
+            >
+              ✓ Lo recordé
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- NAVEGACIÓN -->
+
+        <div class="line-navigation">
+
+          <button
+            id="previousLineButton"
+            class="text-button"
+            type="button"
+          >
+            ← Anterior
+          </button>
+
+          <button
+            id="nextLineButton"
+            class="text-button"
+            type="button"
+          >
+            Siguiente →
+          </button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =====================
+         ENSAYAR
+    ====================== -->
+
+    <section
+      id="view-rehearse"
+      class="view"
+    >
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">Modo escena</span>
+
+          <h2>Ensayar</h2>
+
+          <p>
+            Sigue el diálogo como si estuvieras
+            ensayando la obra.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="rehearsal-toolbar">
+
+        <label for="sceneSelector">
+          Escena
+        </label>
+
+        <select id="sceneSelector">
+        </select>
+
+        <button
+          id="restartSceneButton"
+          class="secondary-button"
+          type="button"
+        >
+          ↻ Reiniciar
+        </button>
+
+      </div>
+
+
+      <article class="rehearsal-stage">
+
+        <div id="rehearsalDialogue">
+        </div>
+
+
+        <div
+          id="orsinoTurn"
+          class="orsino-turn hidden"
+        >
+
+          <span>🎭 TU TURNO</span>
+
+          <h3>ORSINO</h3>
+
+          <p>
+            Di tu texto antes de continuar.
+          </p>
+
+
+          <button
+            id="revealRehearsalButton"
+            class="secondary-button"
+            type="button"
+          >
+            Necesito ver mi texto
+          </button>
+
+
+          <div
+            id="rehearsalAnswer"
+            class="rehearsal-answer hidden"
+          ></div>
+
+        </div>
+
+
+        <div class="rehearsal-controls">
+
+          <button
+            id="rehearsalPreviousButton"
+            class="text-button"
+            type="button"
+          >
+            ← Atrás
+          </button>
+
+          <button
+            id="rehearsalNextButton"
+            class="primary-button"
+            type="button"
+          >
+            Continuar →
+          </button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =====================
+         MIS PARLAMENTOS
+    ====================== -->
+
+    <section
+      id="view-lines"
+      class="view"
+    >
+
+      <div class="page-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            Guion personal
+          </span>
+
+          <h2>Mis parlamentos</h2>
+
+          <p>
+            Todos los textos de Orsino reunidos
+            en un solo lugar.
+          </p>
+
+        </div>
+
+
+        <div class="search-container">
+
+          <input
+            id="lineSearch"
+            type="search"
+            placeholder="Buscar en mis textos..."
+            autocomplete="off"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="linesContainer"
+        class="lines-container"
+      >
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         PROGRESO
+    ====================== -->
+
+    <section
+      id="view-progress"
+      class="view"
+    >
+
+      <div class="page-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            Seguimiento
+          </span>
+
+          <h2>Mi progreso</h2>
+
+          <p>
+            Revisa cuánto texto dominas y cuáles
+            son tus parlamentos más difíciles.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="stats-grid">
+
+        <article class="stat-card">
+
+          <span>Total de parlamentos</span>
+
+          <strong id="totalLinesStat">
+            0
+          </strong>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span>Dominados</span>
+
+          <strong id="masteredLinesStat">
+            0
+          </strong>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span>Por practicar</span>
+
+          <strong id="practiceLinesStat">
+            0
+          </strong>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span>Progreso</span>
+
+          <strong id="progressPercentStat">
+            0%
+          </strong>
+
+        </article>
+
+      </div>
+
+
+      <article class="progress-panel">
+
+        <div class="progress-info">
+
+          <span>Dominio general</span>
+
+          <strong id="mainProgressPercent">
+            0%
+          </strong>
+
+        </div>
+
+
+        <div class="progress-bar large">
+
+          <div
+            id="mainProgressBar"
+            class="progress-fill"
+            style="width: 0%"
+          ></div>
+
+        </div>
+
+
+        <div
+          id="sceneProgressContainer"
+          class="scene-progress-container"
+        >
+        </div>
+
+      </article>
+
+
+      <article class="difficult-panel">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="eyebrow">
+              Reforzar
+            </span>
+
+            <h3>Textos que necesitan práctica</h3>
+
+          </div>
+
+        </div>
+
+
+        <div id="difficultLinesContainer">
+        </div>
+
+      </article>
+
+
+      <button
+        id="resetProgressButton"
+        class="reset-button"
+        type="button"
+      >
+        Reiniciar todo mi progreso
+      </button>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- =========================
+       PIE
+  ========================== -->
+
+  <footer class="app-footer">
+
+    <p>
+      <strong>Noche de Reyes</strong>
+      · Entrenador personal de Orsino
+    </p>
+
+  </footer>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>
