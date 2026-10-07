@@ -202,6 +202,15 @@ textarea.input { resize: vertical; }
 .stats { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; color: var(--muted); margin-top: .3rem; }
 .stats b { color: var(--ink); }
 
+.share { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.share > div { flex: 1 1 260px; }
+.share p { margin: .2rem 0 0; }
+.share-box { margin-top: 12px; display: grid; gap: .4rem; }
+.share-box .actions { margin-top: 4px; justify-content: flex-start; }
+.share-box p { margin: 0; }
+.banner { display: flex; gap: .9rem; align-items: center; border-color: var(--ok); background: var(--ok-soft); }
+.banner .big-emoji { font-size: 2.2rem; }
+
 .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 12px; }
 .chip {
   display: inline-flex; align-items: center; gap: .45rem;

@@ -13,6 +13,14 @@ Web para que los estudiantes del **Colegio Waldorf Michelangelo** se aprendan su
 
 Una barra de progreso muestra cuántas líneas dominas (por obra o por escena).
 
+## Compartir con el curso
+
+El profesor sube el libreto, revisa que los personajes se vean bien y pulsa **«Crear enlace para el curso»**. Los estudiantes abren el enlace, la obra se guarda sola en su dispositivo y solo eligen su personaje.
+
+- El libreto viaja **comprimido dentro del enlace** (después del `#`), así que no hace falta servidor ni base de datos, y Vercel nunca recibe el texto.
+- Si el profesor corrige el libreto y envía un enlace nuevo, quienes lo abran reciben la versión actualizada y **conservan su personaje y su progreso**.
+- Abrir el mismo enlace varias veces no duplica la obra.
+
 ## Privacidad
 
 Todo funciona en el navegador. El libreto y el progreso se guardan solo en el dispositivo (`localStorage`); no hay servidor ni base de datos.

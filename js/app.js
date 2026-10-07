@@ -136,7 +136,9 @@
     stopScene();
     Voice.stop();
     const parts = location.hash.replace(/^#\/?/, '').split('/');
-    if (parts[0] === 'obra' && parts[1]) {
+    if (parts[0] === 'l' && parts[1]) {
+      importShared(parts[1]);
+    } else if (parts[0] === 'obra' && parts[1]) {
       const s = Store.get(parts[1]);
       if (!s) { go(''); return; }
       loadScript(s);
@@ -192,6 +194,7 @@
           <li><span>2</span><div><b>Elige tu personaje.</b> Tus líneas quedan resaltadas en toda la obra.</div></li>
           <li><span>3</span><div><b>Practica a tu ritmo.</b> Cinco formas de ensayar y una barra que muestra cuánto dominas.</div></li>
         </ol>
+        <p class="muted small">👩‍🏫 <b>Profes:</b> suban el libreto una vez, revisen que se vea bien y usen «Crear enlace para el curso». Los estudiantes solo abren el enlace.</p>
         <p class="muted small">🔒 El libreto se guarda solo en este dispositivo. No se envía a ningún servidor.</p>
       </section>`;
 
@@ -252,12 +255,81 @@
     go('obra/' + s.id);
   }
 
+  // ---------- ENLACES COMPARTIDOS ----------
+  async function importShared(payload) {
+    app.innerHTML = '';
+    busy('Abriendo el libreto compartido…');
+    try {
+      const obj = await Share.decode(payload);
+      const title = String(obj.t || 'Obra compartida').slice(0, 200);
+      // Si ya se abrió este libreto antes, se actualiza (conservando personaje y progreso)
+      let s = obj.id && Store.list().find(x => x.shareId === obj.id);
+      if (s) {
+        if (s.rawText !== obj.x) {
+          s.rawText = obj.x;
+          s.title = title;
+          Store.save(s);
+          toast('Libreto actualizado con la última versión ✨');
+        }
+      } else {
+        s = { id: Store.newId(), shareId: obj.id || null, title, rawText: obj.x, chosen: [], shared: true, created: Date.now() };
+        if (!Store.save(s)) throw new Error('No hay espacio para guardar la obra en este navegador.');
+      }
+      location.replace('#/obra/' + s.id + (s.chosen && s.chosen.length ? '/practicar/ensayar' : ''));
+    } catch (e) {
+      console.error(e);
+      toast(e.message || 'No se pudo abrir el enlace.', 'error');
+      location.replace('#/');
+    } finally {
+      busyHide();
+    }
+  }
+
+  async function createShareLink() {
+    const s = state.script;
+    const raw = $('#raw');
+    if (raw && raw.value !== s.rawText &&
+      !confirm('Hiciste cambios en el texto que aún no analizaste. El enlace llevará la versión guardada. ¿Continuar?')) return;
+    if (!s.shareId) { s.shareId = Store.newId(); Store.save(s); }
+    const url = Share.link(await Share.encode({ v: 1, id: s.shareId, t: s.title, x: s.rawText }));
+    const box = $('#shareBox');
+    box.hidden = false;
+    box.innerHTML = `
+      <input id="shareUrl" class="input mono" readonly value="${esc(url)}" aria-label="Enlace para compartir">
+      <div class="actions wrap">
+        <button class="btn primary" data-action="share-copy">📋 Copiar enlace</button>
+        ${navigator.share ? '<button class="btn ghost" data-action="share-native">📤 Enviar…</button>' : ''}
+      </div>
+      <p class="muted small">El enlace contiene la obra completa (${Math.max(1, Math.round(url.length / 1024))} KB), por eso es largo.
+      Funciona por WhatsApp, correo o Google Classroom. Si corriges el libreto, crea un enlace nuevo y envíalo:
+      quienes lo abran conservarán su personaje y su progreso.</p>`;
+    $('#shareUrl').addEventListener('focus', e => e.target.select());
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      const el = $('#shareUrl');
+      el.focus();
+      el.select();
+      try { return document.execCommand('copy'); } catch (err) { return false; }
+    }
+  }
+
   // ---------- REVISAR / ELEGIR PERSONAJE ----------
   function renderReview() {
     const s = state.script, p = state.parsed;
     const chars = p.characters;
     app.innerHTML = `
       <nav class="crumbs"><a href="#/">← Mis obras</a></nav>
+      ${s.shared && !state.chosen.size ? `
+      <section class="card banner">
+        <span class="big-emoji" aria-hidden="true">🎁</span>
+        <div><b>¡Te compartieron el libreto de «${esc(s.title)}»!</b><br>
+        <span class="muted">Ya está guardado en este dispositivo. Elige tu personaje para empezar.</span></div>
+      </section>` : ''}
       <section class="card">
         <input class="title-input" id="title" value="${esc(s.title)}" aria-label="Título de la obra">
         <div class="stats">
@@ -265,6 +337,15 @@
           <span><b>${p.speeches}</b> parlamentos</span>
           <span><b>${p.scenes.length || 1}</b> ${p.scenes.length === 1 || !p.scenes.length ? 'escena' : 'escenas'}</span>
         </div>
+        ${s.shared ? '' : `
+        <div class="share">
+          <div>
+            <b>👩‍🏫 ¿Eres profesor o profesora?</b>
+            <p class="muted small">Comparte este libreto con el curso: los estudiantes abren el enlace, la obra se carga sola y solo eligen su personaje. Revisa antes que los personajes se vean bien abajo.</p>
+          </div>
+          <button class="btn ghost" data-action="share-create">🔗 Crear enlace para el curso</button>
+        </div>
+        <div id="shareBox" class="share-box" hidden></div>`}
       </section>
 
       ${chars.length ? `
@@ -863,6 +944,17 @@ ESCENA 2</pre>
       loadScript(Object.assign({}, s));
       renderReview();
       toast(`Encontré ${state.parsed.characters.length} personajes`);
+    },
+    'share-create': createShareLink,
+    async 'share-copy'() {
+      toast(await copyText($('#shareUrl').value) ? '¡Enlace copiado! Pégalo en WhatsApp, el correo o Classroom.' : 'Selecciona el enlace y cópialo a mano.');
+    },
+    'share-native'() {
+      navigator.share({
+        title: state.script.title,
+        text: `Libreto de «${state.script.title}» para aprender tu papel 🎭`,
+        url: $('#shareUrl').value,
+      }).catch(() => { /* el usuario canceló */ });
     },
     settings: openSettings,
     say(el) {
