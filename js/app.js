@@ -123,6 +123,11 @@
     const valid = new Set(state.parsed.characters.map(c => c.key));
     state.chosen = new Set((s.chosen || []).filter(k => valid.has(k)));
     state.progress = Store.progress(s.id);
+    applyCast();
+  }
+  function applyCast() {
+    if (!state.script) return;
+    Voice.setCast(state.parsed.characters.map(c => c.name), state.script.voices, state.settings.lang);
   }
   function resetModes() {
     state.ens = null;
@@ -751,6 +756,7 @@ ESCENA 2</pre>
     el.innerHTML = `
       <p class="mode-intro">La página lee las líneas de los demás personajes con voces distintas. Cuando llegue tu turno, di tu línea${Voice.canListen ? ' (con el micrófono te dice cuánto acertaste)' : ''}.
       Toca cualquier parlamento para empezar desde ahí.</p>
+      ${voiceTip()}
       <div class="toolbar wrap">
         <button class="btn primary" data-action="${running ? 'scene-stop' : 'scene-play'}">${running ? '⏸ Pausar' : '▶ Empezar'}</button>
         <label class="switch"><input type="checkbox" data-set="showMine" ${S.showMine ? 'checked' : ''}><span></span>Ver mis líneas</label>
@@ -760,6 +766,13 @@ ESCENA 2</pre>
       <div class="script scene-script">${blocksHtml(start, end, { hide: !S.showMine })}</div>
       <div id="turnbar" class="turnbar" hidden></div>`;
     if (state.run) markCurrent(state.run.idx);
+  }
+
+  function voiceTip() {
+    const q = Voice.bestQuality();
+    if (q >= 3) return `<p class="voice-tip ok">🎧 Usando voces naturales. Puedes cambiar la voz de cada personaje en <button class="link" data-action="settings">⚙️ Ajustes</button>.</p>`;
+    if (q === 2) return `<p class="voice-tip">🎧 Para voces todavía más naturales, abre la página en <b>Microsoft Edge</b>. Puedes elegir la voz de cada personaje en <button class="link" data-action="settings">⚙️ Ajustes</button>.</p>`;
+    return `<p class="voice-tip warn">🤖 Este navegador solo tiene voces básicas. Para que suene realista, abre la página en <b>Microsoft Edge</b> (voces «Natural») o en <b>Chrome</b>. En iPhone o Mac puedes descargar voces «mejoradas» en Ajustes › Accesibilidad › Contenido leído › Voces.</p>`;
   }
 
   function markCurrent(i) {
@@ -886,7 +899,41 @@ ESCENA 2</pre>
     $('#setLang').value = S.lang;
     if (!$('#setLang').value) $('#setLang').value = 'es-ES';
     $('#setDirections').checked = S.readDirections;
+    renderCast();
     d.showModal();
+  }
+
+  // Elegir la voz de cada personaje (se guarda con la obra, en este dispositivo)
+  function renderCast() {
+    const box = $('#castBox');
+    const list = Voice.listVoices(state.settings.lang);
+    if (!state.script || !Voice.canSpeak || !list.length) { box.hidden = true; return; }
+    box.hidden = false;
+    const chosen = state.script.voices || {};
+    const options = list.map(v => `<option value="${esc(v.uri)}">${esc(v.label)}</option>`).join('');
+    const row = (key, name, color) => `
+      <div class="cast-row">
+        <span class="role" style="--c:${color}">${esc(name)}</span>
+        <select class="input small" data-cast="${esc(key)}" aria-label="Voz de ${esc(name)}">
+          <option value="">Automática (${esc(Voice.describe(key === Voice.NARRATOR ? key : name))})</option>${options}
+        </select>
+        <button type="button" class="icon-btn small" data-test="${esc(key)}" title="Escuchar" aria-label="Escuchar la voz de ${esc(name)}">▶</button>
+      </div>`;
+    const chars = state.parsed.characters.filter(c => !c.groupOnly);
+    $('#castList').innerHTML =
+      chars.map(c => row(c.key, c.name, colorFor(c.name))).join('') +
+      row(Voice.NARRATOR, 'Acotaciones', 'var(--muted)');
+    $$('#castList select').forEach(sel => { sel.value = chosen[sel.dataset.cast] || ''; });
+    const q = Voice.bestQuality();
+    $('#castQuality').textContent = q >= 3
+      ? 'Las voces con ★ son naturales (neuronales).'
+      : 'Este navegador no tiene voces naturales: en Microsoft Edge aparecen voces marcadas con ★, mucho más realistas.';
+  }
+  function sampleLine(key) {
+    if (key === Voice.NARRATOR) return 'Entra Ana con una cesta y se acerca al árbol.';
+    const b = blocks().find(x => x.type === 'speech' && Parser.key(x.speaker) === key);
+    const t = b ? Parser.spoken(b.text) : 'Hola, así sonará mi voz.';
+    return t.length > 140 ? t.slice(0, t.lastIndexOf(' ', 140)) + '…' : t;
   }
   function bindSettings() {
     const d = $('#settingsDialog');
@@ -898,11 +945,33 @@ ESCENA 2</pre>
       S.lang = $('#setLang').value;
       S.readDirections = $('#setDirections').checked;
       Store.saveSettings(S);
+      if (state.script && !$('#castBox').hidden) {
+        const voices = {};
+        $$('#castList select').forEach(sel => { if (sel.value) voices[sel.dataset.cast] = sel.value; });
+        state.script.voices = voices;
+        Store.save(state.script);
+      }
+      applyCast();
       toast('Ajustes guardados');
       if (state.mode === 'escena' && $('#mode')) renderScene();
     });
     $('#setTest').addEventListener('click', () => {
-      Voice.speak('Hola, así sonará la lectura de la obra.', { who: 'prueba', rate: +$('#setRate').value, lang: $('#setLang').value });
+      Voice.speak('Hola, así sonará la lectura de la obra.', { who: Voice.NARRATOR, rate: +$('#setRate').value, lang: $('#setLang').value });
+    });
+    $('#castList').addEventListener('click', e => {
+      const btn = e.target.closest('[data-test]');
+      if (!btn) return;
+      const key = btn.dataset.test;
+      const sel = $(`#castList select[data-cast="${key}"]`);
+      const name = key === Voice.NARRATOR ? key : (state.parsed.characters.find(c => c.key === key) || {}).name;
+      Voice.speak(sampleLine(key), { who: name, voiceURI: sel.value || null, rate: +$('#setRate').value, lang: $('#setLang').value });
+    });
+    // Las voces del navegador llegan con retraso: actualizar lo que dependa de ellas
+    Voice.onVoicesChanged(() => {
+      applyCast();
+      const tip = $('.voice-tip');
+      if (tip) tip.outerHTML = voiceTip();
+      if ($('#settingsDialog').open) renderCast();
     });
     $('#resetProgress').addEventListener('click', () => {
       if (!state.script || !confirm('¿Borrar todo tu progreso en esta obra?')) return;

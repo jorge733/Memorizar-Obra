@@ -362,6 +362,17 @@ textarea.input { resize: vertical; }
 .dialog form { padding: 22px; display: grid; gap: 14px; }
 .dialog h2 { margin: 0; }
 .dialog hr { border: none; border-top: 1px solid var(--line); width: 100%; margin: 4px 0; }
+.dialog { max-height: calc(100vh - 32px); }
+.cast h3 { margin: 6px 0 2px; font-size: 1.05rem; }
+.cast p { margin: 0 0 8px; }
+.cast-list { display: grid; gap: 8px; }
+.cast-row { display: grid; grid-template-columns: minmax(80px, 30%) 1fr auto; align-items: center; gap: 8px; }
+.cast-row .role { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
+.cast-row select { width: 100%; min-width: 0; }
+.voice-tip { font-size: .9rem; padding: .55rem .8rem; border-radius: 12px; background: var(--accent-soft); margin: 0 0 10px; }
+.voice-tip.ok { background: var(--ok-soft); }
+.voice-tip.warn { background: var(--mid-soft); }
+.link { background: none; border: none; padding: 0; font: inherit; font-weight: 700; color: var(--accent); cursor: pointer; text-decoration: underline; }
 .field { display: grid; gap: .35rem; font-weight: 700; font-size: .92rem; }
 .field input[type="range"] { width: 100%; accent-color: var(--accent); }
 

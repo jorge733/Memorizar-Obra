@@ -16,7 +16,7 @@ window.Store = (function () {
     try { localStorage.setItem(P + k, JSON.stringify(v)); return true; } catch (e) { return false; }
   }
 
-  const navLang = (navigator.language || '').toLowerCase().startsWith('es') ? navigator.language : 'es-ES';
+  const navLang = /^es-[a-z0-9]+$/i.test(navigator.language || '') ? navigator.language : 'es-ES';
 
   return {
     list: () => read('scripts', []),
@@ -34,10 +34,14 @@ window.Store = (function () {
     },
     progress: id => read('progress.' + id, {}),
     saveProgress: (id, p) => write('progress.' + id, p),
-    settings: () => Object.assign(
-      { rate: 1, lang: navLang, readDirections: false, mic: false, showMine: false },
-      read('settings', {})
-    ),
+    settings() {
+      const s = Object.assign(
+        { rate: 1, lang: navLang, readDirections: false, mic: false, showMine: false },
+        read('settings', {})
+      );
+      if (!/^es-/i.test(s.lang)) s.lang = 'es-ES';
+      return s;
+    },
     saveSettings: s => write('settings', s),
     newId: () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
   };

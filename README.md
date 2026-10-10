@@ -21,6 +21,15 @@ El profesor sube el libreto, revisa que los personajes se vean bien y pulsa **«
 - Si el profesor corrige el libreto y envía un enlace nuevo, quienes lo abran reciben la versión actualizada y **conservan su personaje y su progreso**.
 - Abrir el mismo enlace varias veces no duplica la obra.
 
+## Voces
+
+La lectura en voz alta usa las voces del propio dispositivo, sin coste:
+
+- Elige siempre las más naturales disponibles: las **«Natural» de Microsoft Edge** (neuronales, las más realistas), las de Google en Chrome o las «mejoradas» de iPhone/Mac.
+- Cada personaje recibe **una voz distinta** y acorde a su nombre (voces femeninas para ANA o LA REINA, masculinas para PEDRO o EL REY). No se deforma el tono, que es lo que hace sonar robótica una voz.
+- En **⚙️ Ajustes › Voces del reparto** se puede elegir y escuchar la voz de cada personaje.
+- Si el navegador solo tiene voces básicas, la página recomienda abrirla en Edge.
+
 ## Privacidad
 
 Todo funciona en el navegador. El libreto y el progreso se guardan solo en el dispositivo (`localStorage`); no hay servidor ni base de datos.
